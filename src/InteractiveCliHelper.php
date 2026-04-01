@@ -1,9 +1,9 @@
 <?php
 /**
  * @author      Laurent Jouanneau
- * @copyright   2018-2019 Laurent Jouanneau
+ * @copyright   2018-2026 Laurent Jouanneau
  *
- * @see        http://www.jelix.org
+ * @see        https://www.jelix.org
  * @licence    MIT
  */
 namespace Jelix\ConsoleHelpers;
