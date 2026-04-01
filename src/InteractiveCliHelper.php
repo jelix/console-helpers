@@ -10,7 +10,7 @@ namespace Jelix\ConsoleHelpers;
 
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -20,7 +20,7 @@ use Symfony\Component\Console\Question\Question;
 class InteractiveCliHelper
 {
     /**
-     * @var QuestionHelper
+     * @var HelperInterface
      */
     protected $questionHelper;
 
@@ -35,7 +35,7 @@ class InteractiveCliHelper
     protected $consoleOutput;
 
 
-    public function __construct(QuestionHelper $helper, InputInterface $input, OutputInterface $output)
+    public function __construct(HelperInterface $helper, InputInterface $input, OutputInterface $output)
     {
         $this->questionHelper = $helper;
         $this->consoleInput = $input;
@@ -58,9 +58,9 @@ class InteractiveCliHelper
      *
      * @return bool true it the user has confirmed
      */
-    public function askConfirmation($questionMessage, $defaultResponse = false)
+    public function askConfirmation(string $questionMessage, bool $defaultResponse = false) : bool
     {
-        $questionMessage = "<question>${questionMessage}</question>";
+        $questionMessage = "<question>{$questionMessage}</question>";
         if (strpos($questionMessage, "\n") !== false) {
             $questionMessage .= "\n";
         }
@@ -88,18 +88,18 @@ class InteractiveCliHelper
      * @return string the value given by the user
      */
     public function askInformation(
-        $questionMessage,
+        string $questionMessage,
         $defaultResponse = false,
         $autoCompleterValues = false,
         $validator = null
-    )
+    ) : string
     {
-        $questionMessage = "<question>${questionMessage}</question>";
+        $questionMessage = "<question>{$questionMessage}</question>";
         if ($defaultResponse) {
             if (strpos($questionMessage, "\n") !== false) {
                 $questionMessage .= "\n";
             }
-            $questionMessage .= " (default is '${defaultResponse}')";
+            $questionMessage .= " (default is '{$defaultResponse}')";
         }
         $questionMessage .= '<inputstart> > </inputstart>';
         $question = new Question($questionMessage, $defaultResponse);
@@ -154,9 +154,9 @@ class InteractiveCliHelper
      *
      * @return string the value
      */
-    public function askSecretInformation($questionMessage, $defaultResponse = false)
+    public function askSecretInformation(string $questionMessage, $defaultResponse = false) : string
     {
-        $questionMessage = "<question>${questionMessage}</question>";
+        $questionMessage = "<question>{$questionMessage}</question>";
         $questionMessage .= '<inputstart> > </inputstart>';
         $question = new Question($questionMessage, $defaultResponse);
         $question->setHidden(true);
@@ -177,14 +177,14 @@ class InteractiveCliHelper
      * @return string|string[] responses from the user
      */
     public function askInChoice(
-        $questionMessage,
+        string $questionMessage,
         array $choice,
         $defaultResponse = 0,
-        $multipleChoice = false,
-        $errorMessage = '%s is invalid'
+        bool $multipleChoice = false,
+        string $errorMessage = '%s is invalid'
     )
     {
-        $questionMessage = "<question>${questionMessage}</question>";
+        $questionMessage = "<question>{$questionMessage}</question>";
         if (is_array($defaultResponse)) {
             $defaultResponse = implode(',', $defaultResponse);
         }
@@ -192,7 +192,7 @@ class InteractiveCliHelper
             if (strpos($questionMessage, "\n") !== false) {
                 $questionMessage .= "\n";
             }
-            $questionMessage .= " (default is '${defaultResponse}')";
+            $questionMessage .= " (default is '{$defaultResponse}')";
         }
         $question = new ChoiceQuestion($questionMessage, $choice, $defaultResponse);
         $question->setErrorMessage($errorMessage);
@@ -203,12 +203,20 @@ class InteractiveCliHelper
         return $this->questionHelper->ask($this->consoleInput, $this->consoleOutput, $question);
     }
 
-
+    /**
+     * Asks a list of values
+     *
+     * @param string $listTitle The title of the list
+     * @param string $questionItemMessage the question for each item
+     * @param array $values predefined list of values
+     *
+     * @return array list of values given by the user
+     */
     public function askList(
-        $listTitle,
+        string $listTitle,
         $questionItemMessage,
         $values = array()
-    )
+    ) : array
     {
         $command = '';
 
@@ -285,7 +293,7 @@ class InteractiveCliHelper
 
     private function askListNewItem($questionItemMessage)
     {
-        $questionMessage = "<question>${questionItemMessage}</question> <inputstart> > </inputstart>";
+        $questionMessage = "<question>{$questionItemMessage}</question> <inputstart> > </inputstart>";
         $question = new Question($questionMessage);
         $question->setNormalizer(function ($value) {
             // $value can be null here
@@ -313,7 +321,7 @@ class InteractiveCliHelper
 
     private function askListExistingItem($questionItemMessage, $value)
     {
-        $questionMessage = "<question>${questionItemMessage}</question> <inputstart> > </inputstart>";
+        $questionMessage = "<question>{$questionItemMessage}</question> <inputstart> > </inputstart>";
         $question = new Question($questionMessage, $value);
         $question->setNormalizer(function ($value) {
             // $value can be null here

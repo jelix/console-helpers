@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+require(__DIR__.'/../vendor/autoload.php');
+require(__DIR__.'/commands/TestCmd.php');
+
+use Symfony\Component\Console\Application;
+
+
+$command = new TestCmd();
+$application = new Application();
+$application->addCommand($command);
+$application->setDefaultCommand($command->getName());
+$application->run();
